@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
-@Document(collection = "resumes")
+@Document(collection = "resumedb")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
