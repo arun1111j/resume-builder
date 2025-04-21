@@ -6,7 +6,7 @@ WORKDIR /app
 # First copy just the wrapper files and make them executable
 COPY .mvn/ .mvn
 COPY mvnw ./
-RUN chmod +x mvnw  # THIS IS THE CRITICAL FIX
+RUN chmod +x mvnw  
 
 # Then copy POM and download dependencies
 COPY pom.xml ./
