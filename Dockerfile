@@ -1,27 +1,23 @@
-# Build stage
+# Stage 1: Build with JDK 21
 FROM eclipse-temurin:21-jdk-jammy as builder
 
 WORKDIR /app
-COPY mvnw pom.xml .mvn/ .mvn/
+
+# Copy build files separately for better reliability
+COPY mvnw .
+COPY .mvn .mvn
+COPY pom.xml .
+
+# Make mvnw executable and download dependencies
 RUN chmod +x mvnw && ./mvnw dependency:go-offline
+
+# Copy source and build
 COPY src ./src
 RUN ./mvnw clean package -DskipTests
 
-# Runtime stage
+# Stage 2: Runtime with JRE 21
 FROM eclipse-temurin:21-jre-jammy
-
-ENV JAVA_OPTS="-XX:MaxRAMPercentage=75 -Dserver.port=10000"
-ENV PORT=10000
-
 WORKDIR /app
-COPY --from=builder /app/target/resume-builder-*.jar app.jar
-
-RUN useradd -m myuser && chown -R myuser:myuser /app
-USER myuser
-
-HEALTHCHECK --interval=30s --timeout=3s \
-  CMD curl -f http://localhost:10000/manage/health || exit 1
-
+COPY --from=builder /app/target/*.jar app.jar
 EXPOSE 10000
-
-ENTRYPOINT ["sh", "-c", "exec java ${JAVA_OPTS} -jar app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
