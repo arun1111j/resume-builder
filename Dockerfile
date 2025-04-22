@@ -1,24 +1,27 @@
-# Stage 1: Build with JDK 21
+# Build stage
 FROM eclipse-temurin:21-jdk-jammy as builder
 
 WORKDIR /app
-
-# First copy just the wrapper files and make them executable
-COPY .mvn/ .mvn
-COPY mvnw ./
-RUN chmod +x mvnw  
-
-# Then copy POM and download dependencies
-COPY pom.xml ./
-RUN ./mvnw dependency:go-offline
-
-# Copy source and build
+COPY mvnw pom.xml .mvn/ .mvn/
+RUN chmod +x mvnw && ./mvnw dependency:go-offline
 COPY src ./src
 RUN ./mvnw clean package -DskipTests
 
-# Stage 2: Run with JRE 21
+# Runtime stage
 FROM eclipse-temurin:21-jre-jammy
+
+ENV JAVA_OPTS="-XX:MaxRAMPercentage=75 -Dserver.port=10000"
+ENV PORT=10000
+
 WORKDIR /app
-COPY --from=builder /app/target/*.jar app.jar
+COPY --from=builder /app/target/resume-builder-*.jar app.jar
+
+RUN useradd -m myuser && chown -R myuser:myuser /app
+USER myuser
+
+HEALTHCHECK --interval=30s --timeout=3s \
+  CMD curl -f http://localhost:10000/manage/health || exit 1
+
 EXPOSE 10000
-ENTRYPOINT ["java", "-jar", "app.jar"]
+
+ENTRYPOINT ["sh", "-c", "exec java ${JAVA_OPTS} -jar app.jar"]
