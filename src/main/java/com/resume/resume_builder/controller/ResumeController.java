@@ -3,44 +3,42 @@ package com.resume.resume_builder.controller;
 import com.resume.resume_builder.model.Resume;
 import com.resume.resume_builder.service.ResumeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import java.io.IOException;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/resumes")
-@CrossOrigin(origins = "*")
 public class ResumeController {
-
-    private final ResumeService resumeService;
-
     @Autowired
-    public ResumeController(ResumeService resumeService) {
-        this.resumeService = resumeService;
-    }
+    private ResumeService resumeService;
 
     @PostMapping
-    public Resume createResume(@RequestBody Resume resume) {
-        return resumeService.createResume(resume);
-    }
-
-    @GetMapping
-    public List<Resume> getAllResumes() {
-        return resumeService.getAllResumes();
+    public ResponseEntity<Resume> createResume(@RequestBody Resume resume) {
+        return ResponseEntity.ok(resumeService.createResume(resume));
     }
 
     @GetMapping("/{id}")
-    public Resume getResumeById(@PathVariable String id) {
-        return resumeService.getResumeById(id);
+    public ResponseEntity<Resume> getResume(@PathVariable String id) {
+        return ResponseEntity.ok(resumeService.getResumeById(id));
     }
 
-    @PutMapping("/{id}")
-    public Resume updateResume(@PathVariable String id, @RequestBody Resume resume) {
-        return resumeService.updateResume(id, resume);
+    @GetMapping("/user")
+    public ResponseEntity<List<Resume>> getUserResumes() {
+        return ResponseEntity.ok(resumeService.getResumesForCurrentUser());
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteResume(@PathVariable String id) {
-        resumeService.deleteResume(id);
+    @GetMapping("/{id}/pdf")
+    public ResponseEntity<byte[]> generatePdf(@PathVariable String id) {
+        try {
+            byte[] pdf = resumeService.generatePdf(id);
+            return ResponseEntity.ok()
+                    .header("Content-Type", "application/pdf")
+                    .header("Content-Disposition", "attachment; filename=resume.pdf")
+                    .body(pdf);
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 }

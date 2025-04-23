@@ -1,26 +1,24 @@
 package com.resume.resume_builder.model;
 
-import lombok.*;
+import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-
 import java.util.List;
 
-@Document(collection = "resumedb")
+@Document(collection = "resumes")
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 public class Resume {
-
     @Id
     private String id;
-
-    private String fullName;
-    private String email;
-    private String phone;
-    private String summary;
-    private List<String> skills;
-    private List<String> experience;
-    private List<String> education;
+    private String userId;
+    private String userEmail;
+    private PersonalInfo personalInfo;
+    private List<Experience> experiences;
+    private List<Education> educations;
+    private List<Skill> skills;
+    private List<Project> projects;
+    private String templateId;
+    private String shareToken;
+    
+    // Lombok @Data will generate all getters, setters, toString, equals, hashCode
 }
