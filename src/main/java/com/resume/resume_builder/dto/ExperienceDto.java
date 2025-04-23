@@ -1,8 +1,10 @@
 package com.resume.resume_builder.dto;
 
+
 import java.time.LocalDate;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public class ExperienceDto {
     @NotBlank(message = "Company name is required")

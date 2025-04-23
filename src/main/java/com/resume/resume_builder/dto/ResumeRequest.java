@@ -1,7 +1,8 @@
 package com.resume.resume_builder.dto;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.Valid;
+
+import jakarta.validation.constraints.NotBlank;
 import java.util.List;
 
 public class ResumeRequest {
