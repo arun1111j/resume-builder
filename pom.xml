@@ -54,6 +54,10 @@
             <scope>runtime</scope>
             <optional>true</optional>
         </dependency>
+        <dependency>
+		    <groupId>org.springframework.boot</groupId>
+		    <artifactId>spring-boot-starter-thymeleaf</artifactId>
+		</dependency>
 
         <!-- Testing -->
         <dependency>
@@ -86,6 +90,11 @@
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
+        </dependency>
+        <dependency>
+        	<groupId>com.weatherapp</groupId>
+        	<artifactId>weatherapp</artifactId>
+        	<version>0.0.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
