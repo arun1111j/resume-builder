@@ -17,18 +17,23 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .cors().and() // Enable CORS configuration from WebConfig
+            .cors().and()
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
                     "/", 
-                    "/login**", 
+                    "/login", 
+                    "/home",
                     "/error**", 
                     "/webjars/**", 
                     "/css/**", 
                     "/js/**",
-                    "/api/resumes/{id}/pdf"  // Allow PDF access without auth
+                    "/api/resumes/{id}/pdf",
+                    "/user",
+                    "/user-info"
                 ).permitAll()
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                .requestMatchers("/api/templates/**").authenticated()
+                .requestMatchers("/api/resumes/**").authenticated()
                 .anyRequest().authenticated()
             )
             .oauth2Login(oauth -> oauth
@@ -48,7 +53,7 @@ public class SecurityConfig {
             .sessionManagement(session -> session
                 .sessionFixation().changeSessionId()
                 .maximumSessions(1)
-                .maxSessionsPreventsLogin(false) // or true if you want to prevent new logins
+                .maxSessionsPreventsLogin(false)
                 .expiredUrl("/login?expired=true")
                 .and()
                 .invalidSessionUrl("/login?invalid-session=true")
@@ -63,12 +68,11 @@ public class SecurityConfig {
     @Bean
     public AuthenticationSuccessHandler authenticationSuccessHandler() {
         SimpleUrlAuthenticationSuccessHandler handler = new SimpleUrlAuthenticationSuccessHandler();
-        handler.setDefaultTargetUrl("/api/resumes/user");
+        handler.setDefaultTargetUrl("/home"); // Changed to home page
         handler.setAlwaysUseDefaultTargetUrl(true);
         return handler;
     }
 
-    // Required for concurrent session control
     @Bean
     public HttpSessionEventPublisher httpSessionEventPublisher() {
         return new HttpSessionEventPublisher();

@@ -2,6 +2,7 @@ package com.resume.resume_builder.controller;
 
 import com.resume.resume_builder.model.Resume;
 import com.resume.resume_builder.service.ResumeService;
+import com.resume.resume_builder.util.AuthUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,17 +12,24 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/resumes")
 public class ResumeController {
+    
     @Autowired
     private ResumeService resumeService;
 
     @PostMapping
     public ResponseEntity<Resume> createResume(@RequestBody Resume resume) {
+        String userEmail = AuthUtils.getCurrentUserEmail();
+        resume.setUserEmail(userEmail);
         return ResponseEntity.ok(resumeService.createResume(resume));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Resume> getResume(@PathVariable String id) {
-        return ResponseEntity.ok(resumeService.getResumeById(id));
+        Resume resume = resumeService.getResumeById(id);
+        if (!resume.getUserEmail().equals(AuthUtils.getCurrentUserEmail()) && !AuthUtils.isAdmin()) {
+            return ResponseEntity.status(403).build();
+        }
+        return ResponseEntity.ok(resume);
     }
 
     @GetMapping("/user")
