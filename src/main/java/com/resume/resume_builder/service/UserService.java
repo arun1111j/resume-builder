@@ -1,6 +1,7 @@
 package com.resume.resume_builder.service;
 
 import com.resume.resume_builder.model.User;
+
 import com.resume.resume_builder.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
