@@ -1,10 +1,11 @@
 package com.resume.resume_builder.config;
 
+import com.resume.resume_builder.service.CustomOAuth2UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -13,6 +14,9 @@ import org.springframework.security.web.session.HttpSessionEventPublisher;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    @Autowired
+    private CustomOAuth2UserService customOAuth2UserService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -41,7 +45,7 @@ public class SecurityConfig {
                 .successHandler(authenticationSuccessHandler())
                 .failureUrl("/login?error=true")
                 .userInfoEndpoint(userInfo -> userInfo
-                    .userService(new DefaultOAuth2UserService())
+                    .userService(customOAuth2UserService)
                 )
             )
             .logout(logout -> logout
@@ -68,7 +72,7 @@ public class SecurityConfig {
     @Bean
     public AuthenticationSuccessHandler authenticationSuccessHandler() {
         SimpleUrlAuthenticationSuccessHandler handler = new SimpleUrlAuthenticationSuccessHandler();
-        handler.setDefaultTargetUrl("/home"); // Changed to home page
+        handler.setDefaultTargetUrl("/home");
         handler.setAlwaysUseDefaultTargetUrl(true);
         return handler;
     }
