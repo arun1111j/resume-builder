@@ -91,11 +91,7 @@
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
         </dependency>
-        <dependency>
-        	<groupId>com.weatherapp</groupId>
-        	<artifactId>weatherapp</artifactId>
-        	<version>0.0.1-SNAPSHOT</version>
-        </dependency>
+
     </dependencies>
 
     <build>
